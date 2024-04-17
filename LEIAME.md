@@ -8,6 +8,17 @@ A aplicação tem como responsabilidade consumir dados de várias fontes externa
 
 Após a obtenção dos dados, a aplicação os consolida de acordo com a lógica de negócios específica do projeto CoinSnark. Em seguida, os dados consolidados são escritos no Redis, um armazenamento de dados em memória, para acesso rápido por outras partes do projeto.
 
+## Uso
+
+Para utilizar o exRate Hunter, siga estas instruções:
+
+1. Clone o repositório.
+2. Instale as dependências listadas no arquivo `requirements.txt`.
+3. Configure as variáveis de ambiente no arquivo `.env` renomeando o arquivo `.env-example`.
+4. Execute o arquivo `main.py` para iniciar o servidor FastAPI.
+	```bash
+	uvicorn app.main:app --host 0.0.0.0 --port 8000
+	```
 
 Para obter mais informações sobre o projeto CoinSnark, consulte a documentação: [GitBook do Coinsnark](https://rmottanet.gitbook.io/coinsnark).
 
