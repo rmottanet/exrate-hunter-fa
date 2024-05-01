@@ -4,8 +4,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.config import Config
 from app.services import BCBQuotesService, ExchangeRatesService, OpenExchangeService
-from app.data.consolidation import DataConsolidator
-from app.redis_service.redis_writer import RedisWriter
+from app.data import DataConsolidator, DataFilter
+from app.redis_service import RedisWriter, RedisReader
 
 router = APIRouter()
 
@@ -40,6 +40,22 @@ async def consolidate_and_save_data(token_valid: bool = Depends(verify_token)):
         return {"message": "Data saved to Redis successfully!"}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to consolidate and save data: {str(e)}")
+
+
+@router.get("/exrates")
+async def retrieve_exrates_data(token_valid: bool = Depends(verify_token)):
+    try:
+        # Recuperar dados do Redis
+        redis_reader = RedisReader(Config.REDIS_HOST, Config.REDIS_PORT, Config.REDIS_KEY)
+        redis_data = redis_reader.read_from_redis()
+
+        # Filtrar dados
+        data_filter = DataFilter(redis_data)
+        filtered_data = data_filter.filter()
+
+        return filtered_data
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to retrieve data: {str(e)}")
 
     
 @router.get("/", response_class=HTMLResponse)
